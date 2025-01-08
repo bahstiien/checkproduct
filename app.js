@@ -1,4 +1,3 @@
-
 // Password verification logic
 const correctPassword = "alltricks2025";
 
@@ -44,6 +43,7 @@ async function callPerplexityApi(bikeInfo, productUrl) {
             })
         });
 
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
         const result = await response.json();
         return result.message;
     } catch (error) {
@@ -62,15 +62,21 @@ document.getElementById('submit-button').addEventListener('click', async () => {
         return;
     }
 
+    document.getElementById('response').innerText = 'Checking compatibility...';
     const apiResponse = await callPerplexityApi(bikeInfo, productUrl);
     document.getElementById('response').innerText = apiResponse;
 });
 
-// Bug report form logic using secure-api
+// Bug report form logic using Airtable API
 document.getElementById('submit-bug-button').addEventListener('click', async () => {
     const bikeInfo = document.getElementById('bike-info').value;
     const productUrl = document.getElementById('product-url').value;
     const comment = document.getElementById('comment').value;
+
+    if (!comment) {
+        alert('Please add a comment before submitting.');
+        return;
+    }
 
     try {
         const response = await fetch('/api/secure-api', {
@@ -86,7 +92,7 @@ document.getElementById('submit-bug-button').addEventListener('click', async () 
         });
 
         const result = await response.json();
-        alert(result.message);
+        alert(result.message || 'Bug report submitted successfully!');
     } catch (error) {
         alert('An error occurred while submitting the bug report.');
     }
