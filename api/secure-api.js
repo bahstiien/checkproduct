@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
     const { bikeInfo, productUrl, comment } = req.body;
 
-    // Appel à l'API Perplexity
+    // Appel à l'API Perplexity depuis le backend
     try {
         const perplexityResponse = await fetch('https://api.perplexity.ai/endpoint', {
             method: 'POST',
@@ -28,7 +28,18 @@ export default async function handler(req, res) {
 
         const perplexityData = await perplexityResponse.json();
 
-        // Appel à l'API Airtable
+        // Retourner la réponse de Perplexity au frontend
+        res.status(200).json({
+            message: 'Perplexity API call successful!',
+            data: perplexityData
+        });
+    } catch (error) {
+        console.error('Error while calling Perplexity API:', error);
+        res.status(500).json({ message: 'An unexpected error occurred while calling Perplexity.', error: error.message });
+    }
+
+    // Appel à l'API Airtable
+    try {
         const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/tblhAA1vA7rYLVhvQ`;
         const airtableOptions = {
             method: 'POST',
@@ -60,6 +71,6 @@ export default async function handler(req, res) {
             res.status(400).json({ message: `Failed to submit bug report: ${errorData.error.message}` });
         }
     } catch (error) {
-        res.status(500).json({ message: 'An unexpected error occurred.', error: error.message });
+        res.status(500).json({ message: 'An unexpected error occurred while submitting to Airtable.', error: error.message });
     }
 }
