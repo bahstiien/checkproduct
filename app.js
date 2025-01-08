@@ -52,6 +52,18 @@ async function callPerplexityApi(bikeInfo, productUrl) {
     }
 }
 
+// Local JSON data fetch with error handling
+async function fetchData() {
+    try {
+        const response = await fetch('data_bike_flux.json');
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching JSON:', error);
+        return null;
+    }
+}
+
 // Form submission logic for Perplexity API
 document.getElementById('submit-button').addEventListener('click', async () => {
     const bikeInfo = document.getElementById('bike-info').value;
@@ -63,6 +75,16 @@ document.getElementById('submit-button').addEventListener('click', async () => {
     }
 
     document.getElementById('response').innerText = 'Checking compatibility...';
+
+    // Attempt to fetch JSON data
+    const jsonData = await fetchData();
+    if (jsonData) {
+        console.log('JSON data found and loaded');
+    } else {
+        console.log('JSON data not found. Proceeding with Perplexity API call');
+    }
+
+    // Always call Perplexity API regardless of JSON fetch result
     const apiResponse = await callPerplexityApi(bikeInfo, productUrl);
     document.getElementById('response').innerText = apiResponse;
 });
