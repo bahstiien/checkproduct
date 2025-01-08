@@ -1,3 +1,4 @@
+
 // Password verification logic
 const correctPassword = "alltricks2025";
 
@@ -28,25 +29,49 @@ document.getElementById('password').addEventListener('keyup', (event) => {
     }
 });
 
-// Fetch JSON data
-async function fetchData() {
+// Perplexity API call
+async function callPerplexityApi(bikeInfo, productUrl) {
     try {
-        const response = await fetch('data_bike_flux.json');
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        return await response.json();
+        const response = await fetch('https://api.perplexity.ai/endpoint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_PERPLEXITY_API_KEY'
+            },
+            body: JSON.stringify({
+                bikeInfo,
+                productUrl
+            })
+        });
+
+        const result = await response.json();
+        return result.message;
     } catch (error) {
-        console.error('Error fetching JSON:', error);
-        return null;
+        console.error('Error calling Perplexity API:', error);
+        return 'An error occurred while calling the Perplexity API.';
     }
 }
 
-// Clean URL function
-function cleanUrl(url) {
-    return url.split('?')[0];
-}
+// Form submission logic for Perplexity API
+document.getElementById('submit-button').addEventListener('click', async () => {
+    const bikeInfo = document.getElementById('bike-info').value;
+    const productUrl = document.getElementById('product-url').value;
 
-// Function to call secure API route
-async function callSecureApi(bikeInfo, productUrl, comment) {
+    if (!bikeInfo || !productUrl) {
+        document.getElementById('response').innerText = 'Please fill out all fields.';
+        return;
+    }
+
+    const apiResponse = await callPerplexityApi(bikeInfo, productUrl);
+    document.getElementById('response').innerText = apiResponse;
+});
+
+// Bug report form logic using secure-api
+document.getElementById('submit-bug-button').addEventListener('click', async () => {
+    const bikeInfo = document.getElementById('bike-info').value;
+    const productUrl = document.getElementById('product-url').value;
+    const comment = document.getElementById('comment').value;
+
     try {
         const response = await fetch('/api/secure-api', {
             method: 'POST',
@@ -61,49 +86,8 @@ async function callSecureApi(bikeInfo, productUrl, comment) {
         });
 
         const result = await response.json();
-        return result.message;
+        alert(result.message);
     } catch (error) {
-        console.error('Error calling secure API:', error);
-        return 'An error occurred while calling the secure API.';
+        alert('An error occurred while submitting the bug report.');
     }
-}
-
-// Form submission logic
-document.getElementById('submit-button').addEventListener('click', async () => {
-    const bikeInfo = document.getElementById('bike-info').value;
-    const productUrl = document.getElementById('product-url').value;
-
-    if (!bikeInfo || !productUrl) {
-        document.getElementById('response').innerText = 'Please fill out all fields.';
-        return;
-    }
-
-    const jsonData = await fetchData();
-    const cleanedProductUrl = cleanUrl(productUrl.trim());
-    let productFound = false;
-
-    if (jsonData) {
-        productFound = jsonData.find(item => cleanUrl(item.link) === cleanedProductUrl);
-    }
-
-    const apiResponse = await callSecureApi(bikeInfo, cleanedProductUrl, '');
-    document.getElementById('response').innerText = apiResponse;
-
-    if (productFound) {
-        document.getElementById('response').innerText += '\nProduct found in JSON data.';
-    }
-});
-
-// Bug report form logic
-document.getElementById('report-bug-link').addEventListener('click', () => {
-    document.getElementById('bug-form').style.display = 'block';
-});
-
-document.getElementById('submit-bug-button').addEventListener('click', async () => {
-    const bikeInfo = document.getElementById('bike-info').value;
-    const productUrl = document.getElementById('product-url').value;
-    const comment = document.getElementById('comment').value;
-
-    const apiResponse = await callSecureApi(bikeInfo, productUrl, comment);
-    alert(apiResponse);
 });
