@@ -1,0 +1,93 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #EEEEEE;
+}
+
+.container {
+    display: none;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.password-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+input[type="password"],
+input,
+textarea {
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #f9fafb;
+    transition: border-color 0.3s;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #3b82f6;
+    outline: none;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #005162;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #337481;
+}
+
+#error-message {
+    color: red;
+    display: none;
+}
+
+#response {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #111827;
+}
+
+#bug-form {
+    display: none;
+}
+
+.link {
+    margin-top: 10px;
+    text-decoration: underline;
+    color: #005162;
+    cursor: pointer;
+}
+
+.left-section {
+    flex: 1;
+    background: url('https://cdn.pixabay.com/photo/2017/02/21/17/35/round-2086759_1280.jpg') center/cover no-repeat;
+    border-radius: 12px 0 0 12px;
+}

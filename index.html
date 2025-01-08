@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Part Compatibility Checker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Password Section -->
+    <div class="password-section" id="password-section">
+        <h3>Enter Password to Access</h3>
+        <input type="password" id="password" placeholder="Enter password">
+        <button id="submit-password">Submit</button>
+        <p id="error-message">Incorrect password. Try again.</p>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="container" id="main-content">
+        <div class="left-section"></div>
+        <div class="form-section">
+            <h3>Bike Part Compatibility Checker</h3>
+            <form id="compatibility-form">
+                <div class="input-group">
+                    <label for="bike-info">Bike Information</label>
+                    <input type="text" id="bike-info" placeholder="Enter bike info URL">
+                </div>
+                <div class="input-group">
+                    <label for="product-url">Product URL</label>
+                    <input type="text" id="product-url" placeholder="Enter product URL">
+                </div>
+                <button type="button" id="submit-button">Check Compatibility</button>
+            </form>
+            <div id="response"></div>
+            <div class="link" id="report-bug-link">Report a bug</div>
+            <div id="bug-form">
+                <textarea id="comment" placeholder="Add your comment here..."></textarea>
+                <button type="button" id="submit-bug-button">Submit Bug Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
