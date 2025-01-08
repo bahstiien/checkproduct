@@ -28,7 +28,7 @@ document.getElementById('password').addEventListener('keyup', (event) => {
     }
 });
 
-// Perplexity API call
+// Perplexity API call with detailed error handling
 async function callPerplexityApi(bikeInfo, productUrl) {
     try {
         const response = await fetch('https://api.perplexity.ai/endpoint', {
@@ -43,16 +43,30 @@ async function callPerplexityApi(bikeInfo, productUrl) {
             })
         });
 
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        if (!response.ok) {
+            const errorDetails = await response.text();
+            throw new Error(`Error: ${response.status} - ${errorDetails}`);
+        }
+
         const result = await response.json();
         return result.message;
     } catch (error) {
         console.error('Error calling Perplexity API:', error);
-        return 'An error occurred while calling the Perplexity API.';
+        return `An error occurred: ${error.message}`;
     }
 }
 
-
+// Local JSON data fetch with corrected path
+async function fetchData() {
+    try {
+        const response = await fetch('./data_bike_flux.json');
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching JSON:', error);
+        return null;
+    }
+}
 
 // Form submission logic for Perplexity API
 document.getElementById('submit-button').addEventListener('click', async () => {
