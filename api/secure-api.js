@@ -7,9 +7,13 @@ export default async function handler(req, res) {
 
     const { bikeInfo, productUrl, comment } = req.body;
 
-    // Appel à l'API Perplexity depuis le backend
+    // Utilisation d'un proxy public pour contourner les restrictions CORS
+    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const perplexityUrl = 'https://api.perplexity.ai/endpoint';
+
     try {
-        const perplexityResponse = await fetch('https://api.perplexity.ai/endpoint', {
+        // Appel à l'API Perplexity via le proxy
+        const perplexityResponse = await fetch(`${proxyUrl}${perplexityUrl}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
