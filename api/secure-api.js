@@ -7,66 +7,59 @@ export default async function handler(req, res) {
 
     const { bikeInfo, productUrl, comment } = req.body;
 
-    // Récupérer les variables d'environnement
-    const apiKey = process.env.AIRTABLE_API_KEY;
-    const baseId = process.env.AIRTABLE_BASE_ID;
-    const airtableUrl = `https://api.airtable.com/v0/${baseId}/tblhAA1vA7rYLVhvQ`;
-
-    const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
-    const perplexityUrl = 'https://api.perplexity.ai/endpoint';
-
-    const airtableOptions = {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            records: [
-                {
-                    fields: {
-                        "Bike Info": bikeInfo,
-                        "Product URL": productUrl,
-                        "Comment": comment
-                    }
-                }
-            ]
-        })
-    };
-
-    const perplexityOptions = {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${perplexityApiKey}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            bikeInfo,
-            productUrl
-        })
-    };
-
+    // Appel à l'API Perplexity
     try {
-        // Appel à l'API Perplexity
-        const perplexityResponse = await fetch(perplexityUrl, perplexityOptions);
+        const perplexityResponse = await fetch('https://api.perplexity.ai/endpoint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`
+            },
+            body: JSON.stringify({
+                bikeInfo,
+                productUrl
+            })
+        });
+
         if (!perplexityResponse.ok) {
             const errorDetails = await perplexityResponse.text();
-            throw new Error(`Perplexity API Error: ${perplexityResponse.status} - ${errorDetails}`);
+            return res.status(perplexityResponse.status).json({ message: `Perplexity API Error: ${errorDetails}` });
         }
 
         const perplexityData = await perplexityResponse.json();
-        console.log('Perplexity Response:', perplexityData);
 
         // Appel à l'API Airtable
+        const airtableUrl = `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/tblhAA1vA7rYLVhvQ`;
+        const airtableOptions = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                records: [
+                    {
+                        fields: {
+                            "Bike Info": bikeInfo,
+                            "Product URL": productUrl,
+                            "Comment": comment
+                        }
+                    }
+                ]
+            })
+        };
+
         const airtableResponse = await fetch(airtableUrl, airtableOptions);
         if (airtableResponse.ok) {
-            res.status(200).json({ message: 'Bug report submitted successfully!', perplexityResponse: perplexityData });
+            res.status(200).json({
+                message: 'Bug report submitted successfully!',
+                perplexityResponse: perplexityData
+            });
         } else {
             const errorData = await airtableResponse.json();
             res.status(400).json({ message: `Failed to submit bug report: ${errorData.error.message}` });
         }
     } catch (error) {
-        console.error('Error while processing the request:', error);
         res.status(500).json({ message: 'An unexpected error occurred.', error: error.message });
     }
 }
